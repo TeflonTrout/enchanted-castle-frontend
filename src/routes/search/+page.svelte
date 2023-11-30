@@ -4,8 +4,10 @@
     import { onMount } from "svelte";
     import axios from "axios"
     import HoverLink from "../../components/HoverLink/HoverLink.svelte";
-    import { colorList, rarityList } from "../../utils/constants";
+    // import { colorList, rarityList } from "../../utils/constants";
     import type { Card } from "../../../types/Card";
+    import Skeleton from "../../components/Skeleton/Skeleton.svelte";
+    import AdvancedSearchBar from "../../components/AdvancedSearchBar/AdvancedSearchBar.svelte";
 
     interface Query {
         query?: string[],
@@ -15,6 +17,7 @@
         inkCost?: number[],
     }
     // PROPS
+    let advancedSearch:boolean = false;
     let viewMode:string = "grid";
     let userQuery:string = "";
     // QUERY PARAMS
@@ -23,7 +26,14 @@
     const inkable: any = $page.url.searchParams.getAll("inkable")
     const inkCost: any = $page.url.searchParams.getAll("inkCost")
     const setCode: any = $page.url.searchParams.getAll("setCode")
-    let cardArray:Card[] = []
+    let searchPage:number = 1;
+    let limit:number = 20;
+    $: {updateSearchPage(1, limit)}
+    let sortBy:string = "setCode"
+    $: {updateSearchPage(1, limit)}
+    let totalPages:number[] = [];
+    let limitArr:number[] = Array.from({ length: limit }, (_, index) => index + 1)
+    let cardArray:Card[] = [];
 
     let queryObject:Query = {
         query: query,
@@ -44,176 +54,186 @@
         .join('&');
 
     onMount(async () => {
-            axios.get(`http://192.168.254.80:9090/all?${queryString}`)
+            axios.get(`http://192.168.254.80:9090/all?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
             .then(res => {
-                cardArray = res.data.data
+                const length = res.data.totalPages
+                totalPages = Array.from({ length }).map((_, index) => index + 1);
+                searchPage = res.data.page
+                cardArray = res.data.results
             })
         })
+
+    const updateSearchPage = async(newPage:number, newLimit:number) => {
+        cardArray = []
+        await axios.get(`http://192.168.254.80:9090/all?sort=${sortBy}&page=${newPage}&limit=${newLimit}${queryString}`)
+        .then(res => {
+                limitArr = Array.from({ length: limit }, (_, index) => index + 1)
+                searchPage = res.data.page
+                const length = res.data.totalPages
+                totalPages = Array.from({ length }).map((_, index) => index + 1);
+                cardArray = res.data.results
+            })
+    }
         
-        const updateSearchParams = () => {
-            if(userQuery == "") { 
-                goto(`/search`);
-                axios.get(`http://192.168.254.80:9090/search?${queryString}`)
-                .then(res => {
-                    cardArray = res.data.data
-                })
-            } else {
-                $page.url.searchParams.set('name', userQuery); 
-                goto(`?${$page.url.searchParams.toString()}`);
-                axios.get(`http://192.168.254.80:9090/search?${$page.url.searchParams.toString()}`)
-                .then(res => {
-                    cardArray = res.data.data
-                })
-            }
+    const updateSearchParams = () => {
+        if(userQuery == "") { 
+            goto(`/search`);
+            axios.get(`http://192.168.254.80:9090/search?sort=${sortBy}&${queryString}`)
+            .then(res => {
+                cardArray = res.data.results
+            })
+        } else {
+            $page.url.searchParams.set('name', userQuery); 
+            goto(`?${$page.url.searchParams.toString()}`);
+            axios.get(`http://192.168.254.80:9090/search?${$page.url.searchParams.toString()}`)
+            .then(res => {
+                cardArray = res.data.results
+            })
+        }
     }
 </script>
 
 {#if cardArray.length == 0}
-    <div>Loading...</div>
-    {:else}
-    <div class="searchHeader">
-        <div class="searchBar">
-            <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
-            <button on:click={() => updateSearchParams()}>Search</button>
-        </div>
-        <h4>Advanced Search</h4>
-        <div class="advancedSearchContainer">
-                <div class="optionContainer">
-                    <h4>Colors</h4>
-                        {#each colorList as color}
-                            <div class="colorSelector">
-                                <input type="checkbox" name="color" id="color" value={color} />
-                                <label for="color">{color}</label>
-                            </div>
+    <div>
+        <div class="searchHeader">
+            <div class="dashboard">
+                <div class="limit">
+                    <select name="limit" bind:value={limit}>
+                        {#each [20,50,100] as option}                    
+                            <option value={option} selected={limit == option}>{`${option} per page`}</option>
                         {/each}
+                    </select>
                 </div>
-                <div class="optionContainer">
-                    <h4>Ink Cost</h4>
-                    {#each ["1","2","3","4","5","6","7","8","9","10"] as cost}
-                        <div class="inkableSelector">
-                            <label for={cost}>{cost}</label>
-                            <input type="checkbox" name="cost" id={cost}>
-                        </div>
-                    {/each}
-                </div>
-                <div class="optionContainer">
-                    <h4>Inkable</h4>
-                    <div class="inkableSelector">
-                        <input type="radio" name="inkable" id="inkable">
-                        <label for="inkable">Inkable</label>
-                    </div>
-                    <div class="inkableSelector">
-                        <input type="radio" name="inkable" id="nonInkable">
-                        <label for="nonInkable">Non-Inkable</label>
-                    </div>
-                </div>
-                <div class="optionContainer">
-                    <h4>Rarity</h4>
-                    {#each rarityList as rarity}
-                        <div class="raritySelector">
-                            <input type="checkbox" name="rarity" id={rarity}>
-                            <label for={rarity}>{rarity}</label>
-                        </div>
-                    {/each}
-                </div>
+            </div> 
+            <div class="searchBar">
+                <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
+                <button on:click={() => updateSearchParams()}>Search</button>
+            </div>
+            <!-- <h4>Advanced Search</h4>
+            <AdvancedSearchBar /> -->
         </div>
-        <h4>View Mode</h4>
-        <div class="viewSelector">
-            <div class="selector">
-                <label for="grid">Grid</label>
-                <input type="radio" name="viewSelector" checked id="grid" on:click={() => viewMode = "grid"}>
-            </div>  
-            <div class="selector">
-                <label for="list">List</label>
-                <input type="radio" name="viewSelector" id="list" on:click={() => viewMode = "list"}>
+        <div class="grid">
+            <div class="gridContainer">
+                {#each limitArr as idx}
+                    <Skeleton width={200} height={250}/>
+                {/each}
             </div>
         </div>
     </div>
+    {:else}
+        <div class="searchHeader">
+            <div class="dashboard">
+                <div class="limit">
+                    <select name="sort" bind:value={sortBy}>
+                        {#each ["setCode", "alphabetical"] as option}
+                            <option value={option} selected={sortBy == option}>{option}</option>
+                        {/each}
+                    </select>
+                </div>
+                <div class="limit">
+                    <select name="limit" bind:value={limit}>
+                        {#each [20,50,100] as option}                    
+                        <option value={option} selected={limit == option}>{`${option} per page`}</option>
+                        {/each}
+                    </select>
+                </div>
+            </div> 
+            <div class="searchBar">
+                <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
+                <button on:click={() => updateSearchParams()}>Search</button>
+            </div>
+            <button on:click={() => advancedSearch = !advancedSearch}>Advanced Search</button>
+            {#if advancedSearch}
+                <AdvancedSearchBar />
+            {/if}
+            
+        </div>
     {#if viewMode == "grid"}
-        <div class="gridContainer">
-            {#each cardArray as card}
-                <a href={`/TFC/${card.number}`}>
-                    {#if card.image != ""}
-                        <img src={card.image} alt="card preview">
-                    {/if}
-                </a>    
-            {/each}
+        <div class="grid">
+            <div class="gridContainer">
+                {#each cardArray as card}
+                    <a href={`/TFC/${card.number}`}>
+                        {#if card.image != ""}
+                            <img src={card.image} alt="card preview">
+                        {/if}
+                    </a>    
+                {/each}
+            </div>
         </div>
         {:else}
         {#each cardArray as card}
             <HoverLink cardProps={card}/>
         {/each}
     {/if}
+    <div class="pagination">
+        {#each totalPages as idx}
+            <button class={searchPage == idx ? "selected" : ""} on:click={() => {
+                searchPage = idx
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                })
+            }}>{idx}</button>
+        {/each}
+    </div>
 {/if}
 
 <style>
     .searchHeader {
         width: 100%;
         display: flex;
-        margin: 10px;
+        padding: 10px;
         gap: 5px;
         flex-direction: column;
         justify-content: center;
         align-items: center;
     }
 
-    .searchHeader .viewSelector {
+    .searchHeader h4 {
+        text-align: center;
+    }
+
+    .searchHeader .dashboard {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .searchHeader .dashboard .viewSelector {
         display: flex;
         justify-content: space-evenly;
         align-items: center;
         gap: 10px;
-
     }
 
-    .searchHeader .viewSelector .selector { 
+    .searchHeader .dashboard .viewSelector .selector { 
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 5px;
     }
 
-    .searchHeader .advancedSearchContainer {
+    .searchHeader .dashboard .limit {
         display: flex;
         width: 100%;
-        justify-content: space-evenly;
-        align-items: flex-start;
-    }
-
-    .searchHeader .advancedSearchContainer .optionContainer {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
+        gap: 10px;
+        justify-content: space-between;
         align-items: center;
     }
 
-    .searchHeader .advancedSearchContainer .optionContainer .colorSelector {
-        width: 100%;
+    .grid {
         display: flex;
-        justify-content: flex-start;
-        gap: 3px;
+        justify-content: center;
         align-items: center;
-    }
-
-    .searchHeader .advancedSearchContainer .optionContainer .inkableSelector {
         width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        gap: 3px;
-        align-items: center;
-    }
-
-    .searchHeader .advancedSearchContainer .optionContainer .raritySelector {
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        gap: 3px;
-        align-items: center;
     }
 
     .gridContainer {
         display: grid;
-        width: 100%;
+        width: 90%;
         justify-content: center;
+        align-content: center;
         align-items: center;
         justify-items: center;
         gap: 10px;
@@ -224,5 +244,27 @@
         max-width: 200px;
         border-radius: 5px;
         background-color: black;
+    }
+
+    .pagination {
+        display: flex;
+        width: 100%;
+        margin-top: 20px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .pagination button {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .pagination .selected {
+        font-size: 20px;
+        font-weight: bolder;
     }
 </style>

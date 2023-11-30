@@ -12,7 +12,7 @@
         display: flex;
         flex-direction: row;
         width: 100%;
-        padding: 10px 0;
+        padding: 10px;
         justify-content: space-between;
         align-items: center;
         color: black;

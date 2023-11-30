@@ -4,6 +4,7 @@
     import HoverLink from "../../components/HoverLink/HoverLink.svelte";
     import type { Card } from "../../../types/Card";
     import type { CardSets, CardSet } from "../../../types/CardSets";
+  import Skeleton from "../../components/Skeleton/Skeleton.svelte";
     
     export let data:any;
     let isLoading:boolean = true;
@@ -25,7 +26,11 @@
 </script>
 
 {#if isLoading == true}
-    <h1>Loading... set {setCode}</h1>
+    <div class="gridContainer" style="margin-top: 25px;">  
+        {#each [1,2,3,4,5,6,7,8,9,10, 11,12] as idx}
+            <Skeleton width={200} height={250}/>
+        {/each}  
+    </div>
 {:else}
     <div>
         {#if setData != null}
