@@ -4,10 +4,11 @@
     import { onMount } from "svelte";
     import axios from "axios"
     import HoverLink from "../../components/HoverLink/HoverLink.svelte";
-    // import { colorList, rarityList } from "../../utils/constants";
+    import { sortArray } from "../../utils/constants";
     import type { Card } from "../../../types/Card";
     import Skeleton from "../../components/Skeleton/Skeleton.svelte";
     import AdvancedSearchBar from "../../components/AdvancedSearchBar/AdvancedSearchBar.svelte";
+  import type { ChangeEventHandler } from "svelte/elements";
 
     interface Query {
         query?: string[],
@@ -28,9 +29,8 @@
     const setCode: any = $page.url.searchParams.getAll("setCode")
     let searchPage:number = 1;
     let limit:number = 20;
-    $: {updateSearchPage(1, limit)}
-    let sortBy:string = "setCode"
-    $: {updateSearchPage(1, limit)}
+    let sortBy:string = "cardNumber"
+    $: {updateSearchPage(searchPage, limit)}
     let totalPages:number[] = [];
     let limitArr:number[] = Array.from({ length: limit }, (_, index) => index + 1)
     let cardArray:Card[] = [];
@@ -74,6 +74,21 @@
                 cardArray = res.data.results
             })
     }
+
+    const updateSearch = async(e:Event, newPage:number, newLimit:number) => {
+        const target = e.target as HTMLSelectElement;
+        sortBy = target.value
+        e.preventDefault()
+        cardArray = []
+        await axios.get(`http://192.168.254.80:9090/all?sort=${target.value}&page=${newPage}&limit=${newLimit}${queryString}`)
+        .then(res => {
+                limitArr = Array.from({ length: limit }, (_, index) => index + 1)
+                searchPage = res.data.page
+                const length = res.data.totalPages
+                totalPages = Array.from({ length }).map((_, index) => index + 1);
+                cardArray = res.data.results
+            })
+    }
         
     const updateSearchParams = () => {
         if(userQuery == "") { 
@@ -96,19 +111,26 @@
 {#if cardArray.length == 0}
     <div>
         <div class="searchHeader">
-            <div class="dashboard">
-                <div class="limit">
-                    <select name="limit" bind:value={limit}>
-                        {#each [20,50,100] as option}                    
-                            <option value={option} selected={limit == option}>{`${option} per page`}</option>
-                        {/each}
-                    </select>
-                </div>
-            </div> 
             <div class="searchBar">
                 <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
                 <button on:click={() => updateSearchParams()}>Search</button>
             </div>
+            <div class="dashboard">
+                <div class="limit">
+                    All Cards sorted by
+                    <select name="sort" on:change={(e) => updateSearch(e, searchPage, limit)}>
+                        {#each sortArray as option}
+                            <option value={option.optionValue} selected={sortBy == option.optionValue}>{option.optionName}</option>
+                        {/each}
+                    </select>
+                    displaying 
+                    <select name="limit" bind:value={limit}>
+                        {#each [20,50,100] as option}                    
+                        <option value={option} selected={limit == option}>{`${option} per page`}</option>
+                        {/each}
+                    </select>
+                </div>
+            </div> 
             <!-- <h4>Advanced Search</h4>
             <AdvancedSearchBar /> -->
         </div>
@@ -122,15 +144,19 @@
     </div>
     {:else}
         <div class="searchHeader">
+            <div class="searchBar">
+                <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
+                <button on:click={() => updateSearchParams()}>Search</button>
+            </div>
             <div class="dashboard">
                 <div class="limit">
-                    <select name="sort" bind:value={sortBy}>
-                        {#each ["setCode", "alphabetical"] as option}
-                            <option value={option} selected={sortBy == option}>{option}</option>
+                    All Cards sorted by
+                    <select name="sort" on:change={(e) => updateSearch(e, searchPage, limit)}>
+                        {#each sortArray as option}
+                            <option value={option.optionValue} selected={sortBy == option.optionValue}>{option.optionName}</option>
                         {/each}
                     </select>
-                </div>
-                <div class="limit">
+                    displaying 
                     <select name="limit" bind:value={limit}>
                         {#each [20,50,100] as option}                    
                         <option value={option} selected={limit == option}>{`${option} per page`}</option>
@@ -138,14 +164,11 @@
                     </select>
                 </div>
             </div> 
-            <div class="searchBar">
-                <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
-                <button on:click={() => updateSearchParams()}>Search</button>
-            </div>
-            <button on:click={() => advancedSearch = !advancedSearch}>Advanced Search</button>
+            
+            <!-- <button on:click={() => advancedSearch = !advancedSearch}>Advanced Search</button>
             {#if advancedSearch}
                 <AdvancedSearchBar />
-            {/if}
+            {/if} -->
             
         </div>
     {#if viewMode == "grid"}
