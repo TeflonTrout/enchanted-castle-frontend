@@ -6,8 +6,6 @@
   --ruby: #c33537;
   --sapphire: #0088c0;
   --steel: #777c88;
-
-  --gutter: 0px 10px;
 }
 
 *, *::before, *::after {
@@ -15,13 +13,10 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
   
-  html{
+  html,
+  body {
     max-width: 100vw;
-  }
-
-  body{
-    max-width: 100vw;
+    padding: 0 10px;
   }

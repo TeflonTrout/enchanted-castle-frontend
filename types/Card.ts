@@ -21,7 +21,7 @@ export interface Card {
   number: number
   number_in_set: string
   rarity: string
-  subtypes: string[] | null
+  subtypes: string[]
   text_separator: string
   title: string
   type: string

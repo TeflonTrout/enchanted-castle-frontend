@@ -3,10 +3,6 @@
   import { onMount } from "svelte";
   import type { Card } from "../../../../types/Card";
   import Ink from "../../../icons/ink.svelte";
-  import { localData,single } from "../../../utils/localData";
-  import Strength from "../../../icons/strength.svelte";
-  import Willpower from "../../../icons/willpower.svelte";
-  import Skeleton from "../../../components/Skeleton/Skeleton.svelte";
 
     interface Props {
         setCode: string
@@ -14,15 +10,13 @@
     }
 
     export let data:Props;
-    // let cardData:Card | null = null
-    let cardData:any = null
+    let cardData:Card | null = null
     
     onMount(() => {
-        cardData = single
-        // axios.get(`http://192.168.254.80:9090/cards/${data.setCode}/${data.cardNumber}`)
-        // .then(res => {
-        //     cardData = res.data.data
-        // })
+        axios.get(`http://192.168.254.80:9090/cards/${data.setCode}/${data.cardNumber}`)
+        .then(res => {
+            cardData = res.data.data
+        })
     })
 
     function parseBodyText(bodyText:string | undefined) {
@@ -31,65 +25,31 @@
             return text
         }
     }
-
-    function colorSwitch(color:string) {
-        switch(color){
-            case "Amber":
-                return "var(--amber)"
-        }
-    }
 </script>
 
-{#if cardData == null}
-    <div class="individualCard">
-        <div class="cardImage">
-            <Skeleton width={500} height={400}/>
-        </div>
-        <div class="cardInfo">
-            <Skeleton width={600} height={400}/>
-        </div>
+<div class="individualCard">
+    <div class="cardImage">
+        <img src={cardData?.image} alt="card">
     </div>
-{:else}
-    <div class="individualCard">
-        <div class="cardImage">
-            {#if cardData?.image == null}  
-                <img src={cardData?.image} alt="card">
-            {:else}
-                <Skeleton width={500} height={400} />
-            {/if}
+    <div class="cardInfo">
+        <div class="heading">
+            <h1>{cardData?.name} - {cardData?.title}</h1>
+            <Ink cost={cardData?.ink_cost} />
         </div>
-        <div class="cardInfo" style={`box-shadow: 2px 2px 10px 3px ${colorSwitch(cardData?.oldData?.color)}`}>
-            <div class="heading">
-                <h1>{cardData?.name} - {cardData?.title}</h1>
-                <Ink cost={cardData?.ink_cost} />
-            </div>
-            <div class="subtypes">
-                {#each cardData?.oldData?.subtypes as subtype}
-                    <p>{subtype}</p>
-                {/each}
-            </div>
-            <p>{parseBodyText(cardData?.oldData?.body_text)}</p>
-            <div class="powerStat">
-                <Strength strength={cardData?.attack}/>
-                <Willpower willpower={cardData?.willpower} />
-            </div>
-            <span></span>
-            <p>{cardData?.oldData?.flavor_text}</p>
-            <div class="footer">
-                <div class="cardNumber">
-                    {cardData?.number}/{cardData?.pack}
-                </div>
-                <div class="rarity">
-                    <p>{cardData?.oldData?.rarity}</p>
-                </div>
-                <div class="set">
-                    {cardData?.oldData?.set_code}
-                </div>
-            </div>
+        <div>
+            <h3>{cardData?.type}</h3>
         </div>
+        <div class="stat">
+            <p>Strength:</p>
+            <p>{cardData?.attack}</p>
+        </div>
+        <div class="stat">
+            <p>Willpower:</p>
+            <p>{cardData?.willpower}</p>
+        </div>
+        <p>{parseBodyText(cardData?.body_text)}</p>
     </div>
-{/if}
-
+</div>
 
 <style>
     /* MOBILE */
@@ -107,8 +67,6 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
-            margin-top: 25px;
-            padding: 20px;
         }
         .cardImage {
             display: flex;
@@ -126,6 +84,7 @@
             width: 70%;
             border-radius: 10px;
             min-height: 50vh;
+            box-shadow: 1px 1px 1px 1px black;
             padding: 10px;
         }
 
@@ -136,43 +95,9 @@
             align-items: center;
         }
 
-        .cardInfo .subtypes {
-            display: flex;
-            width: 100%;
-            padding: 5px 10px;
-            margin: 5px;
-            justify-content: space-evenly;
-            align-items: center;
-        }
-
-        .cardInfo .powerStat {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            width: 100%;
-        }
-
-        .cardInfo span {
-            display: block;
-            width: 100%;
-            margin: 10px;
-            border-bottom: 2px solid black;
-        }
-
-        .cardInfo .footer {
+        .cardInfo .stat {
             display: flex;
             justify-content: center;
-            align-items: center;
-            width: 100%;
-            padding: 5px 10px;
-        }
-
-        .cardInfo .footer .rarity {
-            display: flex;
-            width: 100%;
-            padding: 5px 10px;
-            margin: 5px;
-            justify-content: space-evenly;
             align-items: center;
         }
     } 
