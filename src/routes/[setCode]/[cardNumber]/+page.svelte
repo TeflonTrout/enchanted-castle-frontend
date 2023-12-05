@@ -2,11 +2,12 @@
   import axios from "axios";
   import { onMount } from "svelte";
   import type { Card } from "../../../../types/Card";
-  import Ink from "../../../icons/ink.svelte";
-  import { localData,single } from "../../../utils/localData";
+  import Ink from "../../../icons/inkable.svelte";
   import Strength from "../../../icons/strength.svelte";
   import Willpower from "../../../icons/willpower.svelte";
   import Skeleton from "../../../components/Skeleton/Skeleton.svelte";
+  import Lore from "../../../icons/lore.svelte";
+  import Cost from "../../../icons/ink.svelte";
 
     interface Props {
         setCode: string
@@ -14,15 +15,14 @@
     }
 
     export let data:Props;
-    // let cardData:Card | null = null
-    let cardData:any = null
+    let cardData:Card | null = null
     
     onMount(() => {
-        cardData = single
-        // axios.get(`http://192.168.254.80:9090/cards/${data.setCode}/${data.cardNumber}`)
-        // .then(res => {
-        //     cardData = res.data.data
-        // })
+        axios.get(`http://localhost:9090/cards/${data.setCode}/${data.cardNumber}`)
+        .then(res => {
+            cardData = res.data.data
+            console.log(res.data.data)
+        })
     })
 
     function parseBodyText(bodyText:string | undefined) {
@@ -36,6 +36,16 @@
         switch(color){
             case "Amber":
                 return "var(--amber)"
+            case "Amethyst":
+                return "var(--amethyst)"
+            case "Emerald":
+                return "var(--emerald)"
+            case "Ruby":
+                return "var(--ruby)"
+            case "Sapphire":
+                return "var(--sapphire)"
+            case "Steel":
+                return "var(--steel)"
         }
     }
 </script>
@@ -52,40 +62,87 @@
 {:else}
     <div class="individualCard">
         <div class="cardImage">
-            {#if cardData?.image == null}  
-                <img src={cardData?.image} alt="card">
-            {:else}
-                <Skeleton width={500} height={400} />
+            {#if cardData.image != null}  
+                    <img src={cardData.image} alt="card" style={`border-radius: 13px; box-shadow: 0px 0px 20px 5px ${colorSwitch(cardData.color)}`}>
+                {:else}
+                    <Skeleton width={500} height={400} />
             {/if}
         </div>
-        <div class="cardInfo" style={`box-shadow: 2px 2px 10px 3px ${colorSwitch(cardData?.oldData?.color)}`}>
-            <div class="heading">
-                <h1>{cardData?.name} - {cardData?.title}</h1>
-                <Ink cost={cardData?.ink_cost} />
-            </div>
-            <div class="subtypes">
-                {#each cardData?.oldData?.subtypes as subtype}
-                    <p>{subtype}</p>
-                {/each}
-            </div>
-            <p>{parseBodyText(cardData?.oldData?.body_text)}</p>
-            <div class="powerStat">
-                <Strength strength={cardData?.attack}/>
-                <Willpower willpower={cardData?.willpower} />
+        <div class="cardInfo" style={`box-shadow: 0px 0px 20px 5px ${colorSwitch(cardData.color)}`}>
+            <div class="line">
+                <div class="name">
+                    <h1>{cardData.name}</h1>
+                    <h3>{cardData.subname}</h3>
+                </div>
+                {#if cardData.inkable}
+                    <Ink cost={cardData.ink_cost}/>
+                    {:else}
+                    <Cost cost={cardData.ink_cost}/>
+                {/if}
             </div>
             <span></span>
-            <p>{cardData?.oldData?.flavor_text}</p>
-            <div class="footer">
-                <div class="cardNumber">
-                    {cardData?.number}/{cardData?.pack}
+            <div class="subtypes">
+                {#if cardData.subtypes != null}
+                    {#each cardData.subtypes as subtype, idx}
+                        {#if idx == cardData.subtypes.length - 1}
+                            <p>{subtype}</p> 
+                            {:else}
+                            <p>{subtype} • &nbsp;</p>
+                        {/if}
+                    {/each}
+                {/if}
+            </div>
+            {#if cardData.body_text.length == 0}
+                <span></span>
+                {:else}
+                <span></span>
+                    <div class="body">
+                        {#each cardData.body_text as text}
+                            <p>{parseBodyText(text)}</p>
+                        {/each}
+                    </div>
+                <span></span>
+            {/if}
+            <div class="body">
+                <p><em>{cardData.flavor}</em></p>    
+            </div>
+            <div class="powerContainer">
+                <div class="powerStat">
+                    <Lore />
+                    x{cardData.lore}
                 </div>
-                <div class="rarity">
-                    <p>{cardData?.oldData?.rarity}</p>
-                </div>
-                <div class="set">
-                    {cardData?.oldData?.set_code}
+                <div class="powerStat">
+                    <Strength strength={cardData.attack}/>
+                    <Willpower willpower={cardData.willpower} />
                 </div>
             </div>
+        </div>
+        <div class="moreInfoContainer">
+            <div class="setInfo">
+                <div class="setName">
+                    <h3>The First Chapter ({cardData.set_code})</h3>
+                </div>
+                <div class="infoContainer">
+                    <h5>#{cardData.number}</h5>
+                    <h5>|</h5>
+                    <h5>{cardData.rarity}</h5>
+                    <h5>|</h5>
+                    <h5>English</h5>
+                </div>
+                <div class="setName">
+                    <h5>
+                        <em>Illustration by: {cardData.artist}</em>
+                    </h5>
+                </div>
+                <div class="franchiseContainer">
+                    <h5>{cardData.franchise.franchise_name} ({cardData.franchise.franchise_code})</h5>
+                </div>
+            </div>
+        </div>
+        <div class="pagination">
+            <a href={`${cardData.number + 1}`} target="_self">
+                Next
+            </a>
         </div>
     </div>
 {/if}
@@ -104,18 +161,18 @@
     @media screen and (min-width: 780px) {
         .individualCard {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-evenly;
+            align-items: flex-start;
             gap: 10px;
             margin-top: 25px;
-            padding: 20px;
+            padding: 50px;
         }
         .cardImage {
             display: flex;
             width: 30%;
         }
         .cardImage img {
-            max-width: 100%;
+            max-height: 350px;
         }
 
         .cardInfo {
@@ -123,57 +180,108 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            width: 70%;
+            width: 50%;
             border-radius: 10px;
-            min-height: 50vh;
-            padding: 10px;
+            min-height: 350px;
+            padding: 20px;
+            gap: 20px;
         }
 
-        .cardInfo .heading {
+        .cardInfo .line {
             display: flex;
             width: 100%;
             justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cardInfo .powerContainer {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cardInfo .powerContainer .powerStat {
+            display: flex;
+            justify-content: flex-end;
             align-items: center;
         }
 
         .cardInfo .subtypes {
             display: flex;
             width: 100%;
-            padding: 5px 10px;
-            margin: 5px;
-            justify-content: space-evenly;
+            justify-content: center;
+            padding: 0px 10px;
             align-items: center;
-        }
-
-        .cardInfo .powerStat {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            width: 100%;
         }
 
         .cardInfo span {
             display: block;
             width: 100%;
-            margin: 10px;
             border-bottom: 2px solid black;
         }
 
-        .cardInfo .footer {
+        .cardInfo .body {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cardInfo .body span {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid black;
+        }
+
+        .cardInfo .body p {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+        }
+
+        .moreInfoContainer {
+            display: flex;
+            flex-direction: column;
+            justify-self: flex-start;
+            align-items: center;
+            width: 30%;
+            padding: 10px;
+            gap: 20px;
+        }
+
+        .setInfo {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 10px;     
+        }
+
+        .setInfo .setName {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            padding: 5px 10px;
         }
 
-        .cardInfo .footer .rarity {
+        .setInfo .infoContainer {
             display: flex;
-            width: 100%;
-            padding: 5px 10px;
-            margin: 5px;
-            justify-content: space-evenly;
+            justify-content: space-around;
             align-items: center;
+            width: 100%;
+        }
+
+        .setInfo .franchiseContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
     } 
 </style>

@@ -54,7 +54,7 @@
         .join('&');
 
     onMount(async () => {
-            axios.get(`http://192.168.254.80:9090/all?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
+            axios.get(`http://localhost:9090/all?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
             .then(res => {
                 const length = res.data.totalPages
                 totalPages = Array.from({ length }).map((_, index) => index + 1);
@@ -65,7 +65,7 @@
 
     const updateSearchPage = async(newPage:number, newLimit:number) => {
         cardArray = []
-        await axios.get(`http://192.168.254.80:9090/all?sort=${sortBy}&page=${newPage}&limit=${newLimit}${queryString}`)
+        await axios.get(`http://localhost:9090/all?sort=${sortBy}&page=${newPage}&limit=${newLimit}${queryString}`)
         .then(res => {
                 limitArr = Array.from({ length: limit }, (_, index) => index + 1)
                 searchPage = res.data.page
@@ -80,7 +80,7 @@
         sortBy = target.value
         e.preventDefault()
         cardArray = []
-        await axios.get(`http://192.168.254.80:9090/all?sort=${target.value}&page=${newPage}&limit=${newLimit}${queryString}`)
+        await axios.get(`http://localhost:9090/all?sort=${target.value}&page=${newPage}&limit=${newLimit}${queryString}`)
         .then(res => {
                 limitArr = Array.from({ length: limit }, (_, index) => index + 1)
                 searchPage = res.data.page
@@ -93,14 +93,14 @@
     const updateSearchParams = () => {
         if(userQuery == "") { 
             goto(`/search`);
-            axios.get(`http://192.168.254.80:9090/search?sort=${sortBy}&${queryString}`)
+            axios.get(`http://localhost:9090/search?sort=${sortBy}&${queryString}`)
             .then(res => {
                 cardArray = res.data.results
             })
         } else {
             $page.url.searchParams.set('name', userQuery); 
             goto(`?${$page.url.searchParams.toString()}`);
-            axios.get(`http://192.168.254.80:9090/search?${$page.url.searchParams.toString()}`)
+            axios.get(`http://localhost:9090/search?${$page.url.searchParams.toString()}`)
             .then(res => {
                 cardArray = res.data.results
             })
@@ -175,7 +175,7 @@
         <div class="grid">
             <div class="gridContainer">
                 {#each cardArray as card}
-                    <a href={`/TFC/${card.number}`}>
+                    <a href={`/${card.set_code}/${card.number}`}>
                         {#if card.image != ""}
                             <img src={card.image} alt="card preview">
                         {/if}
