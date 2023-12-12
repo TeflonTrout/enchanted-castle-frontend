@@ -15,7 +15,7 @@
     let cardArray:Card[] = []
 
     onMount(async () => {
-        axios.get(`http://https://enchanted-castle-server.onrender.com/cards/${data.setCode}`)
+        axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}`)
         .then(res => {
             setName = res.data.setData.name
             setData = res.data.setData
