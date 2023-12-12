@@ -116,35 +116,36 @@
                     <Willpower willpower={cardData.willpower} />
                 </div>
             </div>
-        </div>
-        <div class="moreInfoContainer">
-            <div class="setInfo">
-                <div class="setName">
-                    <h3>The First Chapter ({cardData.set_code})</h3>
-                </div>
-                <div class="infoContainer">
-                    <h5>#{cardData.number}</h5>
-                    <h5>|</h5>
-                    <h5>{cardData.rarity}</h5>
-                    <h5>|</h5>
-                    <h5>English</h5>
-                </div>
-                <div class="setName">
-                    <h5>
-                        <em>Illustration by: {cardData.artist}</em>
-                    </h5>
-                </div>
-                <div class="franchiseContainer">
-                    <h5>{cardData.franchise.franchise_name} ({cardData.franchise.franchise_code})</h5>
+            <div class="moreInfoContainer">
+                <div class="setInfo">
+                    <div class="setName">
+                        <h3>The First Chapter ({cardData.set_code})</h3>
+                    </div>
+                    <div class="infoContainer">
+                        <h5>#{cardData.number}</h5>
+                        <h5>|</h5>
+                        <h5>{cardData.rarity}</h5>
+                        <h5>|</h5>
+                        <h5>English</h5>
+                    </div>
+                    <div class="setName">
+                        <h5>
+                            <em>Illustration by: {cardData.artist}</em>
+                        </h5>
+                    </div>
+                    <div class="franchiseContainer">
+                        <h5>{cardData.franchise.franchise_name} ({cardData.franchise.franchise_code})</h5>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="pagination">
+        <!-- <div class="pagination">
             <a href={`${cardData.number + 1}`} target="_self">
                 Next
             </a>
-        </div>
+        </div> -->
     </div>
+    
 {/if}
 
 
@@ -169,6 +170,8 @@
         }
         .cardImage {
             display: flex;
+            justify-self: center;
+            align-self: flex-start;
             width: 30%;
         }
         .cardImage img {
@@ -247,9 +250,9 @@
         .moreInfoContainer {
             display: flex;
             flex-direction: column;
-            justify-self: flex-start;
+            justify-self: center;
             align-items: center;
-            width: 30%;
+            width: 100%;
             padding: 10px;
             gap: 20px;
         }
@@ -259,7 +262,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 100%;
+            width:50%;
             gap: 10px;     
         }
 

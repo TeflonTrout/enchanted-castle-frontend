@@ -29,7 +29,7 @@
     const setCode: any = $page.url.searchParams.getAll("setCode")
     let searchPage:number = 1;
     let limit:number = 20;
-    let sortBy:string = "cardNumber"
+    let sortBy:string = "alphabetical"
     $: {updateSearchPage(searchPage, limit)}
     let totalPages:number[] = [];
     let limitArr:number[] = Array.from({ length: limit }, (_, index) => index + 1)
