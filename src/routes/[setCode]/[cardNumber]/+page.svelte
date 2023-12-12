@@ -18,7 +18,7 @@
     let cardData:Card | null = null
     
     onMount(() => {
-        axios.get(`http://localhost:9090/cards/${data.setCode}/${data.cardNumber}`)
+        axios.get(`http://https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${data.cardNumber}`)
         .then(res => {
             cardData = res.data.data
             console.log(res.data.data)
