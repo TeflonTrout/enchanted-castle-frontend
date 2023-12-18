@@ -27,7 +27,7 @@
 
 {#if isLoading == true}
     <div class="gridContainer" style="margin-top: 25px;">  
-        {#each [1,2,3,4,5,6,7,8,9,10, 11,12] as idx}
+        {#each [1,2,3,4,5,6,7,8,9,10, 11,12] as _}
             <Skeleton width={200} height={250}/>
         {/each}  
     </div>
@@ -45,7 +45,7 @@
     {#if viewMode == "grid"}
         <div class="gridContainer">
             {#each cardArray as card}
-                <a href={`/TFC/${card.number}`}>
+                <a href={`/${card.set_code}/${card.number}`}>
                     {#if card.image != ""}
                         <img src={card.image} alt="card preview">
                     {/if}
