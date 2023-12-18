@@ -57,7 +57,7 @@
         .join('&');
     
     onMount(async () => {
-            axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/all?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
             .then(res => {
                 const length = res.data.totalPages
                 totalPages = Array.from({ length }).map((_, index) => index + 1);
