@@ -8,7 +8,6 @@
     import type { Card } from "../../../types/Card";
     import Skeleton from "../../components/Skeleton/Skeleton.svelte";
     import AdvancedSearchBar from "../../components/AdvancedSearchBar/AdvancedSearchBar.svelte";
-  import type { ChangeEventHandler } from "svelte/elements";
 
     interface Query {
         query?: string[],
@@ -16,6 +15,7 @@
         setCode?: string[],
         inkable?: boolean,
         inkCost?: number[],
+        franchiseCode?: string[]
     }
     // PROPS
     let advancedSearch:boolean = false;
@@ -27,6 +27,7 @@
     const inkable: any = $page.url.searchParams.getAll("inkable")
     const inkCost: any = $page.url.searchParams.getAll("inkCost")
     const setCode: any = $page.url.searchParams.getAll("setCode")
+    const franchiseCode: string[] = $page.url.searchParams.getAll("franchiseCode")
     let searchPage:number = 1;
     let limit:number = 20;
     let sortBy:string = "alphabetical"
@@ -34,16 +35,18 @@
     let totalPages:number[] = [];
     let limitArr:number[] = Array.from({ length: limit }, (_, index) => index + 1)
     let cardArray:Card[] = [];
+    let queryString:any;
 
     let queryObject:Query = {
         query: query,
         color: colors,
         inkable: inkable,
         inkCost: inkCost,
-        setCode: setCode
+        setCode: setCode,
+        franchiseCode: franchiseCode
     }
 
-    const queryString = Object.keys(queryObject)
+    queryString = Object.keys(queryObject)
         .map((key) => {
             const value = queryObject[key as keyof Query];
             if (Array.isArray(value)) {
@@ -52,68 +55,59 @@
             return `${key}=${value}`;
             })
         .join('&');
-
+    
     onMount(async () => {
-            axios.get(`http://https://enchanted-castle-server.onrender.com/all?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
             .then(res => {
                 const length = res.data.totalPages
                 totalPages = Array.from({ length }).map((_, index) => index + 1);
                 searchPage = res.data.page
-                cardArray = res.data.results
+                cardArray = res.data.data
             })
         })
 
     const updateSearchPage = async(newPage:number, newLimit:number) => {
         cardArray = []
-        await axios.get(`http://https://enchanted-castle-server.onrender.com/all?sort=${sortBy}&page=${newPage}&limit=${newLimit}${queryString}`)
+        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${queryString}`)
         .then(res => {
-                limitArr = Array.from({ length: limit }, (_, index) => index + 1)
-                searchPage = res.data.page
-                const length = res.data.totalPages
-                totalPages = Array.from({ length }).map((_, index) => index + 1);
-                cardArray = res.data.results
-            })
+            cardArray = res.data.data
+        })
     }
 
     const updateSearch = async(e:Event, newPage:number, newLimit:number) => {
         const target = e.target as HTMLSelectElement;
-        sortBy = target.value
         e.preventDefault()
         cardArray = []
-        await axios.get(`http://https://enchanted-castle-server.onrender.com/all?sort=${target.value}&page=${newPage}&limit=${newLimit}${queryString}`)
+        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${queryString}`)
         .then(res => {
-                limitArr = Array.from({ length: limit }, (_, index) => index + 1)
-                searchPage = res.data.page
-                const length = res.data.totalPages
-                totalPages = Array.from({ length }).map((_, index) => index + 1);
-                cardArray = res.data.results
+                cardArray = res.data.data
             })
     }
         
-    const updateSearchParams = () => {
+    const updateSearchQuery = () => {
         if(userQuery == "") { 
             goto(`/search`);
-            axios.get(`http://https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&${queryString}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&${queryString}`)
             .then(res => {
-                cardArray = res.data.results
+                cardArray = res.data.data
             })
         } else {
             $page.url.searchParams.set('name', userQuery); 
             goto(`?${$page.url.searchParams.toString()}`);
-            axios.get(`http://https://enchanted-castle-server.onrender.com/search?${$page.url.searchParams.toString()}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/search?${$page.url.searchParams.toString()}`)
             .then(res => {
-                cardArray = res.data.results
+                cardArray = res.data.data
             })
         }
     }
 </script>
 
-{#if cardArray.length == 0}
+{#if cardArray.length == 0 }
     <div>
         <div class="searchHeader">
             <div class="searchBar">
                 <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
-                <button on:click={() => updateSearchParams()}>Search</button>
+                <button on:click={() => updateSearchQuery()}>Search</button>
             </div>
             <div class="dashboard">
                 <div class="limit">
@@ -136,7 +130,7 @@
         </div>
         <div class="grid">
             <div class="gridContainer">
-                {#each limitArr as idx}
+                {#each limitArr as _}
                     <Skeleton width={200} height={250}/>
                 {/each}
             </div>
@@ -146,7 +140,7 @@
         <div class="searchHeader">
             <div class="searchBar">
                 <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
-                <button on:click={() => updateSearchParams()}>Search</button>
+                <button on:click={() => updateSearchQuery()}>Search</button>
             </div>
             <div class="dashboard">
                 <div class="limit">
