@@ -33,7 +33,7 @@
 
     .detailedCard a {
         text-decoration: none;
-        color: black;
+        color: var(--ec-black);
         cursor: pointer;
     }
 </style>

@@ -11,7 +11,7 @@
 
 <style>
     .button {
-        background-color: black;
+        background-color: var(--ec-black);
         padding: 5px 10px;
         border-radius: 5px;
         transition: .3s ease-in-out;
@@ -21,12 +21,12 @@
     .button:hover {
         background-color: rgb(121, 121, 121);
         transition: .3s ease-in-out;
-        color: black;
+        color: var(--ec-black);
     }
     
     .button:hover a {
         transition: .3s ease-in-out;
-        color: black;
+        color: var(--ec-black);
     }
 
     .button a {

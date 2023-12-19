@@ -15,7 +15,7 @@
         padding: 10px;
         justify-content: space-between;
         align-items: center;
-        color: black;
+        color: var(--ec-black);
     }
 
     .linkContainer {
@@ -25,6 +25,6 @@
     }
 
     .navbar a {
-        color: black;
+        color: var(--ec-black);
     }
 </style>
