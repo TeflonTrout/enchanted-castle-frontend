@@ -74,6 +74,6 @@
     .gridContainer img {
         max-width: 200px;
         border-radius: 5px;
-        background-color: black;
+        background-color: var(--ec-black);
     }
 </style>

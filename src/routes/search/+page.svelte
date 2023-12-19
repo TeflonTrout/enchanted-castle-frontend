@@ -260,13 +260,13 @@
     .gridContainer img {
         max-width: 200px;
         border-radius: 5px;
-        background-color: black;
+        background-color: var(--ec-black);
     }
 
     .pagination {
         display: flex;
         width: 100%;
-        margin-top: 20px;
+        margin: 20px 0;
         justify-content: center;
         align-items: center;
         gap: 10px;
