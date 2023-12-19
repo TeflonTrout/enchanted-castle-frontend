@@ -29,13 +29,13 @@
             cardData = res.data.data
             console.log(res.data.data)
         })
-        for (let i = -2; i < 0; i++) {
+        for (let i = -1; i > -3; i--) {
             axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
             .then(res => {
                 previewArray = [...previewArray, res.data.data]
             })
         }
-        for (let i = 0; i < 2; i++) {
+        for (let i = 1; i < 3; i++) {
             axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
             .then(res => {
                 previewArray = [...previewArray, res.data.data]
@@ -88,8 +88,13 @@
         </div>
         <div class="mainContainer">
             <div class="heading">
-                <h1>{cardData.name} - {cardData.set_code}</h1>
-                <Button link={`../${cardData.set_code}`} text={setArray[cardData.set_id - 1]?.set_name}/>
+                <div class="nameContainer"> 
+                    <h1>{cardData.name}</h1>
+                    <h3>{cardData.subname}</h3>
+                </div>
+                <div>
+                    <Button link={`../search?setCode=${cardData.set_code}`} text={setArray[cardData.set_id - 1]?.set_name}/>
+                </div>
             </div>
             <div class="bodyText">
                 {#each cardData.body_text as text}
@@ -118,7 +123,7 @@
                     <span></span>
                     <div class="row">
                         <h5>Color:</h5>
-                        <h5><a href={`../search?color=${cardData.color}`}>{cardData.color}</a></h5>
+                        <h5><a href={`../search?color=${cardData.color}`} style={`color: ${colorSwitch(cardData.color)}`}>{cardData.color}</a></h5>
                     </div>
                     <span></span>
                     <div class="row">
@@ -144,7 +149,7 @@
                     <span></span>
                     <div class="row">
                         <h5>Franchise:</h5>
-                        <h5><a href={`../search?franchiseCode=${franchiseMap[Number(cardData.franchise.franchise_id) - 1].franchise_code}`}>{cardData.franchise.franchise_name}</a></h5>
+                        <h5><a href={`../search?franchiseCode=${franchiseMap[Number(cardData.franchise.franchise_id) - 1]?.franchise_code}`}>{cardData.franchise.franchise_name} - ({cardData.franchise.franchise_code})</a></h5>
                     </div>
                     <span></span>
                 </div>
@@ -154,8 +159,8 @@
     <div class="otherCards">
         <h1>Other Cards</h1>
         <div class="grid">
-            {#each previewArray as card}
-                <DetailedCard imgUrl={card.image} name={card.name}/>
+            {#each previewArray.sort((a,b) => {return a.number - b.number}) as card}
+                <DetailedCard imgUrl={card.image} name={card.name} subname={card.subname} link={`../${card.set_code}/${card.number}`}/>
             {/each}
         </div>
     </div>
@@ -181,12 +186,14 @@
             margin-top: 25px;
             padding: 50px;
         }
+
         .cardImage {
             display: flex;
             justify-self: center;
             align-self: flex-start;
             width: 30%;
         }
+
         .cardImage img {
             max-height: 350px;
         }
@@ -207,15 +214,12 @@
             width: 100%;
         }
 
-        .mainContainer .heading .button {
+        .mainContainer .heading .nameContainer {
             display: flex;
-            width: 142px;
-            height: 32px;
-            padding: 9px 20px;
-            justify-content: center;
-            align-items: center;
-            border-radius: 5px;
-            background: #F0F6FF;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .mainContainer .bodyText {
@@ -250,6 +254,18 @@
             background: #FFF;
         }
 
+        .cardInfo a {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: .3s ease-in-out;
+        }
+
+        .cardInfo a:hover {
+            opacity: 50%;
+            transition: .3s ease-in-out;
+        }
+
         .cardInfo .heading {
             width: 100%;
             display: flex;
@@ -274,6 +290,10 @@
             width: 100%;
         }
 
+        .cardInfo .container .row h5 {
+            width: 80%;
+        }
+
         .cardInfo .container .row h5:first-child {
             width: 20%;
         }
@@ -287,16 +307,32 @@
         .cardInfo span:last-of-type {
             border: none;
         }
+        
+        .otherCards {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .otherCards h1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
         .otherCards .grid {
             display: grid;
             width: 100%;
-            justify-content: space-between;
+            justify-content: center;
             align-content: center;
             align-items: center;
             justify-items: center;
             gap: 10px;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
             padding: 15px 40px;
         }
     } 
