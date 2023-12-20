@@ -24,20 +24,22 @@
     let previewArray:Card[] = [];
     
     onMount(() => {
-        axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${data.cardNumber}`)
+        axios.get(`http://localhost:9090/cards/${data.setCode}/${data.cardNumber}`)
         .then(res => {
             cardData = res.data.data
             console.log(res.data.data)
         })
         for (let i = -1; i > -3; i--) {
-            axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
+            axios.get(`http://localhost:9090/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
             .then(res => {
+                console.log(res.data.data)
                 previewArray = [...previewArray, res.data.data]
             })
         }
         for (let i = 1; i < 3; i++) {
-            axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
+            axios.get(`http://localhost:9090/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
             .then(res => {
+                console.log(res.data.data)
                 previewArray = [...previewArray, res.data.data]
             })
         }
@@ -97,9 +99,11 @@
                 </div>
             </div>
             <div class="bodyText">
-                {#each cardData.body_text as text}
+                {#if cardData.body_text?.length > 0}                    
+                    {#each cardData.body_text as text}
                     <p>{parseBodyText(text)}</p>
-                {/each}
+                    {/each}
+                {/if}
             </div>
             <div class="cardInfo" >
                 <div class="heading">
@@ -128,10 +132,11 @@
                     <span></span>
                     <div class="row">
                         <h5>Types:</h5>
-                        {#if cardData.subtypes != null}                            
+                        <h5>{cardData.type} {cardData.subtypes != undefined && cardData.subtypes.length > 0 ? "|" : ""}</h5>
+                        {#if cardData.subtypes != null && cardData.subtypes?.length > 0}                            
                             <h5>
                                 {#each cardData.subtypes as subtype,idx}
-                                    {idx + 1 != cardData.subtypes.length ? `${subtype} | ` : subtype}
+                                    {idx + 1 != cardData.subtypes?.length ? `${subtype} | ` : subtype}
                                 {/each}
                             </h5>
                         {/if}                    
@@ -159,9 +164,11 @@
     <div class="otherCards">
         <h1>Other Cards</h1>
         <div class="grid">
-            {#each previewArray.sort((a,b) => {return a.number - b.number}) as card}
+            {#if previewArray?.length > 0}                
+                {#each previewArray.sort((a,b) => {return a.number - b.number}) as card}
                 <DetailedCard imgUrl={card.image} name={card.name} subname={card.subname} link={`../${card.set_code}/${card.number}`}/>
-            {/each}
+                {/each}
+            {/if}
         </div>
     </div>
 {/if}
