@@ -1,7 +1,6 @@
 <script lang='ts'>
     import { page } from "$app/stores";
-    import { goto, invalidateAll } from "$app/navigation";
-    import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
     import axios from "axios"
     import HoverLink from "../../components/HoverLink/HoverLink.svelte";
     import { sortArray } from "../../utils/constants";
@@ -12,57 +11,31 @@
     interface Query {
         query?: string[],
         color?: string[],
+        rarity?: string[],
         setCode?: string[],
         inkable?: boolean,
         inkCost?: number[],
         name?: string[],
+        bodyText?: string[],
         franchiseCode?: string[]
     }
     // PROPS
     let advancedSearch:boolean = false;
     let viewMode:string = "grid";
     let userQuery:string = "";
-    // QUERY PARAMS
-    const query: string[] = $page.url.searchParams.getAll("query")
-    const colors: any = $page.url.searchParams.getAll("color")
-    const inkable: any = $page.url.searchParams.getAll("inkable")
-    const inkCost: any = $page.url.searchParams.getAll("inkCost")
-    const setCode: any = $page.url.searchParams.getAll("setCode")
-    const name: any = $page.url.searchParams.getAll("name")
-    const franchiseCode: string[] = $page.url.searchParams.getAll("franchiseCode")
+    // SEARCH PARAMS
     let searchPage:number = 1;
     let limit:number = 20;
     let sortBy:string = "alphabetical"
-    let queryString:any;
+    let queryString:any = [];
     let totalPages:number[] = [];
     let limitArr:number[] = Array.from({ length: limit }, (_, index) => index + 1)
     let cardArray:Card[] = [];
     let isNoResults:boolean = false;
 
-    let queryObject:Query = {
-        query: query,
-        color: colors,
-        inkable: inkable,
-        inkCost: inkCost,
-        setCode: setCode,
-        name: name,
-        franchiseCode: franchiseCode
-    }
-
     $: $page.url.search, updateSearchPage(searchPage, limit)
-    $: $page.url.search, console.log("name", $page.url.searchParams.get("name"))
 
-
-    queryString = Object.keys(queryObject)
-        .map((key) => {
-            const value = queryObject[key as keyof Query];
-            if (Array.isArray(value)) {
-                return value.map((v) => `${key}=${v}`).join('&');
-            }
-            return `${key}=${value}`;
-            })
-        .join('&');
-
+    // READ ALL SEARCH PARAMS FROM THE URL
     const getAllSearchParams = () => {
         const query: string[] = $page.url.searchParams.getAll("query")
         const colors: any = $page.url.searchParams.getAll("color")
@@ -70,6 +43,8 @@
         const inkCost: any = $page.url.searchParams.getAll("inkCost")
         const setCode: any = $page.url.searchParams.getAll("setCode")
         const name: any = $page.url.searchParams.getAll("name")
+        const rarity: any = $page.url.searchParams.getAll("rarity")
+        const bodyText: string[] = $page.url.searchParams.getAll("bodyText")
         const franchiseCode: string[] = $page.url.searchParams.getAll("franchiseCode")
         let queryObject:Query = {
             query: query,
@@ -77,6 +52,8 @@
             inkable: inkable,
             inkCost: inkCost,
             setCode: setCode,
+            bodyText: bodyText,
+            rarity: rarity,
             name: name,
             franchiseCode: franchiseCode
         }
@@ -100,15 +77,15 @@
         .then(res => {
             cardArray = res.data.data
             console.log(res.data)
-            if(cardArray.length == 0) {
+            if(res.data.data == null) {
                 isNoResults = true
+                cardArray = []
             }
         })
     }
 
     const updateSearch = async(e:Event, newPage:number, newLimit:number) => {
         const newQueryString = getAllSearchParams()
-        console.log(newQueryString)
         const target = e.target as HTMLSelectElement;
         cardArray = []
         await axios.get(`http://localhost:9090/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
@@ -135,7 +112,7 @@
     }
 </script>
 
-{#if cardArray.length == 0 && isNoResults == false }
+{#if cardArray?.length == 0 && isNoResults == false }
     <div>
         <div class="searchHeader">
             <div class="searchBar">
@@ -153,7 +130,7 @@
                     displaying 
                     <select name="limit" bind:value={limit}>
                         {#each [20,50,100] as option}                    
-                        <option value={option} selected={limit == option}>{`${option} per page`}</option>
+                            <option value={option} selected={limit == option}>{`${option} per page`}</option>
                         {/each}
                     </select>
                 </div>
