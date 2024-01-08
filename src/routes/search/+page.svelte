@@ -1,7 +1,6 @@
 <script lang='ts'>
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
-    import { onMount } from "svelte";
     import axios from "axios"
     import HoverLink from "../../components/HoverLink/HoverLink.svelte";
     import { sortArray } from "../../utils/constants";
@@ -12,41 +11,54 @@
     interface Query {
         query?: string[],
         color?: string[],
+        rarity?: string[],
         setCode?: string[],
         inkable?: boolean,
         inkCost?: number[],
+        name?: string[],
+        bodyText?: string[],
         franchiseCode?: string[]
     }
     // PROPS
     let advancedSearch:boolean = false;
     let viewMode:string = "grid";
     let userQuery:string = "";
-    // QUERY PARAMS
-    const query: string[] = $page.url.searchParams.getAll("query")
-    const colors: any = $page.url.searchParams.getAll("color")
-    const inkable: any = $page.url.searchParams.getAll("inkable")
-    const inkCost: any = $page.url.searchParams.getAll("inkCost")
-    const setCode: any = $page.url.searchParams.getAll("setCode")
-    const franchiseCode: string[] = $page.url.searchParams.getAll("franchiseCode")
+    // SEARCH PARAMS
     let searchPage:number = 1;
     let limit:number = 20;
     let sortBy:string = "alphabetical"
-    $: {updateSearchPage(searchPage, limit)}
+    let queryString:any = [];
     let totalPages:number[] = [];
     let limitArr:number[] = Array.from({ length: limit }, (_, index) => index + 1)
     let cardArray:Card[] = [];
-    let queryString:any;
+    let isNoResults:boolean = false;
 
-    let queryObject:Query = {
-        query: query,
-        color: colors,
-        inkable: inkable,
-        inkCost: inkCost,
-        setCode: setCode,
-        franchiseCode: franchiseCode
-    }
+    $: $page.url.search, updateSearchPage(searchPage, limit)
 
-    queryString = Object.keys(queryObject)
+    // READ ALL SEARCH PARAMS FROM THE URL
+    const getAllSearchParams = () => {
+        const query: string[] = $page.url.searchParams.getAll("query")
+        const colors: any = $page.url.searchParams.getAll("color")
+        const inkable: any = $page.url.searchParams.getAll("inkable")
+        const inkCost: any = $page.url.searchParams.getAll("inkCost")
+        const setCode: any = $page.url.searchParams.getAll("setCode")
+        const name: any = $page.url.searchParams.getAll("name")
+        const rarity: any = $page.url.searchParams.getAll("rarity")
+        const bodyText: string[] = $page.url.searchParams.getAll("bodyText")
+        const franchiseCode: string[] = $page.url.searchParams.getAll("franchiseCode")
+        let queryObject:Query = {
+            query: query,
+            color: colors,
+            inkable: inkable,
+            inkCost: inkCost,
+            setCode: setCode,
+            bodyText: bodyText,
+            rarity: rarity,
+            name: name,
+            franchiseCode: franchiseCode
+        }
+
+        queryString = Object.keys(queryObject)
         .map((key) => {
             const value = queryObject[key as keyof Query];
             if (Array.isArray(value)) {
@@ -55,30 +67,28 @@
             return `${key}=${value}`;
             })
         .join('&');
-    
-    onMount(async () => {
-            axios.get(`https://enchanted-castle-server.onrender.com/all?sort=${sortBy}&page=${searchPage}&limit=${limit}${queryString}`)
-            .then(res => {
-                const length = res.data.totalPages
-                totalPages = Array.from({ length }).map((_, index) => index + 1);
-                searchPage = res.data.page
-                cardArray = res.data.data
-            })
-        })
+        return queryString
+    }
 
     const updateSearchPage = async(newPage:number, newLimit:number) => {
+        const newQueryString = getAllSearchParams()
         cardArray = []
-        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${queryString}`)
+        await axios.get(`http://localhost:9090/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
             cardArray = res.data.data
+            console.log(res.data)
+            if(res.data.data == null) {
+                isNoResults = true
+                cardArray = []
+            }
         })
     }
 
     const updateSearch = async(e:Event, newPage:number, newLimit:number) => {
+        const newQueryString = getAllSearchParams()
         const target = e.target as HTMLSelectElement;
-        e.preventDefault()
         cardArray = []
-        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${queryString}`)
+        await axios.get(`http://localhost:9090/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
                 cardArray = res.data.data
             })
@@ -102,7 +112,7 @@
     }
 </script>
 
-{#if cardArray.length == 0 }
+{#if cardArray?.length == 0 && isNoResults == false }
     <div>
         <div class="searchHeader">
             <div class="searchBar">
@@ -120,7 +130,7 @@
                     displaying 
                     <select name="limit" bind:value={limit}>
                         {#each [20,50,100] as option}                    
-                        <option value={option} selected={limit == option}>{`${option} per page`}</option>
+                            <option value={option} selected={limit == option}>{`${option} per page`}</option>
                         {/each}
                     </select>
                 </div>
@@ -138,10 +148,10 @@
     </div>
     {:else}
         <div class="searchHeader">
-            <div class="searchBar">
+            <!-- <div class="searchBar">
                 <input type="text" name="query" id="query" on:change={(e) => {userQuery = e.currentTarget.value}} placeholder="Search">
                 <button on:click={() => updateSearchQuery()}>Search</button>
-            </div>
+            </div> -->
             <div class="dashboard">
                 <div class="limit">
                     All Cards sorted by
@@ -181,6 +191,11 @@
         {#each cardArray as card}
             <HoverLink cardProps={card}/>
         {/each}
+    {/if}
+    {#if cardArray.length == 0 && isNoResults == true}
+        <div>
+            No Results
+        </div>
     {/if}
     <div class="pagination">
         {#each totalPages as idx}
@@ -260,13 +275,13 @@
     .gridContainer img {
         max-width: 200px;
         border-radius: 5px;
-        background-color: black;
+        background-color: var(--ec-black);
     }
 
     .pagination {
         display: flex;
         width: 100%;
-        margin-top: 20px;
+        margin: 20px 0;
         justify-content: center;
         align-items: center;
         gap: 10px;
