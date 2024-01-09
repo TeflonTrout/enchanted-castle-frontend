@@ -7,7 +7,7 @@
             <h1>Welcome to Enchanted Castle!</h1>
             <h4>Your home for all things Lorcana!</h4>    
         </div>
-        <BentoItem text="View Cards" link="/all" height={2} width={3}/>
+        <BentoItem text="View Cards" link="/search" height={2} width={3}/>
         <div class="container" style="grid-area: span 2 / span 3;">
             <BentoItem text="About Us" link="/about"/>
             <BentoItem text="API Docs" link="/docs"/>
