@@ -73,7 +73,7 @@
     const updateSearchPage = async(newPage:number, newLimit:number) => {
         const newQueryString = getAllSearchParams()
         cardArray = []
-        await axios.get(`http://localhost:9090/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${newQueryString}`)
+        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
             cardArray = res.data.data
             console.log(res.data)
@@ -88,7 +88,7 @@
         const newQueryString = getAllSearchParams()
         const target = e.target as HTMLSelectElement;
         cardArray = []
-        await axios.get(`http://localhost:9090/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
+        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
                 cardArray = res.data.data
             })

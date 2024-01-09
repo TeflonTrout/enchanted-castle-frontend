@@ -24,20 +24,20 @@
     let previewArray:Card[] = [];
     
     onMount(() => {
-        axios.get(`http://localhost:9090/cards/${data.setCode}/${data.cardNumber}`)
+        axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${data.cardNumber}`)
         .then(res => {
             cardData = res.data.data
             console.log(res.data.data)
         })
         for (let i = -1; i > -3; i--) {
-            axios.get(`http://localhost:9090/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
             .then(res => {
                 console.log(res.data.data)
                 previewArray = [...previewArray, res.data.data]
             })
         }
         for (let i = 1; i < 3; i++) {
-            axios.get(`http://localhost:9090/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}/${Number(data.cardNumber) + i}`)
             .then(res => {
                 console.log(res.data.data)
                 previewArray = [...previewArray, res.data.data]
