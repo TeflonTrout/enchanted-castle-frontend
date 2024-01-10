@@ -5,15 +5,33 @@
     export let link:string
     export let external:boolean = false
     export let wallpaper:any = null
+    export let wallpaperProps:string = ""
+    export let itemProps:string = ""
 </script>
 
 {#if external}
-    <a class="item" href={link} target="_blank" rel="noopener noreferrer" style={`grid-area: span ${height} / span ${width};`}>
-        <h2>{text}</h2>
+    <a class="item" href={link} target="_blank" rel="noopener noreferrer" style={`grid-area: span ${height} / span ${width};${itemProps}`}>
+        {#if wallpaper != null}    
+            <img src={wallpaper} alt="background" style={wallpaperProps}/>
+            <div class="container">
+                {#if text != ""}
+                    <h2>{text}</h2>
+                {/if}
+            </div>
+            {:else}
+            <h2>{text}</h2>
+        {/if}
     </a>
-{:else}
-    <a class="item" href={link} style={`grid-area: span ${height} / span ${width};`}>    
-        <h2>{text}</h2>
+    {:else}
+    <a class="item" href={link} style={`grid-area: span ${height} / span ${width};${itemProps}`}>    
+        {#if wallpaper != null}    
+            <img src={wallpaper} alt="background" style={wallpaperProps}/>
+            <div class="container">
+                <h2>{text}</h2>
+            </div>
+            {:else}
+            <h2>{text}</h2>
+        {/if}
     </a>
 {/if} 
     
@@ -21,21 +39,55 @@
     a {
         text-decoration: none;
         color: black;
+        overflow: hidden;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        object-fit: cover;
+        display: flex;
     }
 
     .item {
-        border: 2px solid black;
         background-color: #f5f5f5;
         border-radius: 0.5rem;
-        padding: 1rem;
         transition: .2s ease-in-out;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
         text-align: center;
+        position: relative;
         background-color: #8EC5FC;
         background-image: linear-gradient(45deg, #8EC5FC 0%, #E0C3FC 100%);
+    }  
+
+    .item img {
+        height: 100%;
+        position: relative;
+        left: 5%;
+        z-index: 1;
+    }
+
+    .item h2 {
+        width: 80%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        font-size: 20px;
+    }
+
+    .item .container h2 {
+        width: 60%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        background-color: #f5f5f5;
+        padding: 5px 10px;
+        border-radius: 5px;
     }
 
     .item:hover {

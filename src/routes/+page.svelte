@@ -1,5 +1,11 @@
 <script>
   import BentoItem from "../components/BentoItem/BentoItem.svelte";
+  import TFC from "../../src/images/TFC_Elsa.png"
+  import RFB from "../../src/images/RFB_Pooh.jpg"
+  import hero from "../../src/images/hero.jpg"
+  import cardBack from "../../src/images/cardBack.jpg"
+  import discord from "../../src/images/discord.png"
+  import x from "../../src/images/x.png"
 </script>
 <div class="home">
     <div class="bentoBox">
@@ -7,7 +13,7 @@
             <h1>Welcome to Enchanted Castle!</h1>
             <h4>Your home for all things Lorcana!</h4>    
         </div>
-        <BentoItem text="View Cards" link="/all" height={2} width={3}/>
+        <BentoItem text="View Cards" link="/all" wallpaper={hero} wallpaperProps={"width: 185%; left: 0%; height: auto;"} height={2} width={3}/>
         <div class="container" style="grid-area: span 2 / span 3;">
             <BentoItem text="About Us" link="/about"/>
             <BentoItem text="API Docs" link="/docs"/>
@@ -15,16 +21,15 @@
         <!-- BREAK -->
         <div class="container" style="grid-area: span 3 / span 2;">
             <BentoItem text="View Cards By Set" link="/sets"/>
-            <BentoItem text="Join Our Discord" link="" external/>
             <BentoItem text="References" link="/" />
+            <BentoItem text="Contact Us" link="/contact" />
         </div>
-        <BentoItem text="Rise of the Floodborn" link="/RFB" height={3} width={2} />
-        <BentoItem text="The First Chapter" link="/TFC" height={3} width={2} />
+        <BentoItem text="Rise of the Floodborn" link="/search?setCode=RFB" wallpaperProps="left:0%;" wallpaper={RFB} height={3} width={2} />
+        <BentoItem text="The First Chapter" link="/search?setCode=TFC" wallpaper={TFC} height={3} width={2} />
         <!-- BREAK -->
-        <BentoItem text="Contact Us" link="/contact" height={1} width={3} />
-        <BentoItem text="X" link="/" external height={1} width={1} />
-        <BentoItem text="Card Search" link="/search" height={1} width={1} />
-        <BentoItem text="Report Issues" link="/" height={1} width={1} />
+        <BentoItem text="Report Issues" link="/" height={1} width={4} />
+        <BentoItem text="" link="" wallpaper={discord} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: transparent !important;" external height={1} width={1}/>
+        <BentoItem text="" link="/" wallpaper={x} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: black !important;" external height={1} width={1} />
     </div>
 </div>
 
@@ -48,22 +53,23 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        gap: 5px;
     }
 
     .bentoBox {
         display: grid;
         width: 90%;
         margin-top: 20px;
-        grid-column-gap: 2rem;
-        grid-row-gap: 2rem;
+        grid-column-gap: 1.25rem;
+        grid-row-gap: 1.25rem;
         grid-template-columns: repeat(6, 1fr);
         grid-template-rows: repeat(8, 100px);
     }
 
     .container {
         display: grid;
-        grid-column-gap: 2rem;
-        grid-row-gap: 2rem;
+        grid-column-gap: 1.25rem;
+        grid-row-gap: 1.25rem;
         grid-template-columns: 1fr;
         grid-template-rows: repeat(2, 100px);
     }
