@@ -35,6 +35,11 @@
 
     $: $page.url.search, updateSearchPage(searchPage, limit)
 
+    const numberToArray = (value:number) => {
+        var arr = Array.from({ length: value }, (_, index) => index + 1)
+        return arr
+    }
+
     // READ ALL SEARCH PARAMS FROM THE URL
     const getAllSearchParams = () => {
         const query: string[] = $page.url.searchParams.getAll("query")
@@ -59,16 +64,16 @@
         }
 
         queryString = Object.keys(queryObject)
-        .map((key) => {
-            const value = queryObject[key as keyof Query];
-            if (Array.isArray(value)) {
-                return value.map((v) => `${key}=${v}`).join('&');
-            }
-            return `${key}=${value}`;
-            })
-        .join('&');
-        return queryString
-    }
+            .map((key) => {
+                const value = queryObject[key as keyof Query];
+                if (Array.isArray(value)) {
+                    return value.map((v) => `${key}=${v}`).join('&');
+                }
+                return `${key}=${value}`;
+                })
+            .join('&');
+            return queryString
+        }
 
     const updateSearchPage = async(newPage:number, newLimit:number) => {
         const newQueryString = getAllSearchParams()
@@ -76,6 +81,7 @@
         await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
             cardArray = res.data.data
+            totalPages = numberToArray(res.data.totalPages)
             console.log(res.data)
             if(res.data.data == null) {
                 isNoResults = true
@@ -91,6 +97,7 @@
         await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
                 cardArray = res.data.data
+                totalPages = numberToArray(res.data.totalPages)
             })
     }
         
@@ -100,6 +107,7 @@
             axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&${queryString}`)
             .then(res => {
                 cardArray = res.data.data
+                totalPages = numberToArray(res.data.totalPages)
             })
         } else {
             $page.url.searchParams.set('name', userQuery); 
@@ -107,6 +115,7 @@
             axios.get(`https://enchanted-castle-server.onrender.com/search?${$page.url.searchParams.toString()}`)
             .then(res => {
                 cardArray = res.data.data
+                totalPages = numberToArray(res.data.totalPages)
             })
         }
     }
@@ -219,10 +228,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-    }
-
-    .searchHeader h4 {
-        text-align: center;
+        background-color: #f3e7ff;
     }
 
     .searchHeader .dashboard {
@@ -230,20 +236,6 @@
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
-    }
-
-    .searchHeader .dashboard .viewSelector {
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .searchHeader .dashboard .viewSelector .selector { 
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 5px;
     }
 
     .searchHeader .dashboard .limit {
@@ -259,6 +251,7 @@
         justify-content: center;
         align-items: center;
         width: 100%;
+        background-color: #f3e7ff;
     }
 
     .gridContainer {
@@ -281,10 +274,11 @@
     .pagination {
         display: flex;
         width: 100%;
-        margin: 20px 0;
+        padding: 20px 0;
         justify-content: center;
         align-items: center;
         gap: 10px;
+        background-color: #f3e7ff;
     }
 
     .pagination button {

@@ -13,7 +13,7 @@
             <h1>Welcome to Enchanted Castle!</h1>
             <h4>Your home for all things Lorcana!</h4>    
         </div>
-        <BentoItem text="View Cards" link="/all" wallpaper={hero} wallpaperProps={"width: 185%; left: 0%; height: auto;"} height={2} width={3}/>
+        <BentoItem text="View Cards" link="/search" wallpaper={hero} wallpaperProps={"width: 185%; left: 0%; height: auto;"} height={2} width={3}/>
         <div class="container" style="grid-area: span 2 / span 3;">
             <BentoItem text="About Us" link="/about"/>
             <BentoItem text="API Docs" link="/docs"/>
@@ -28,7 +28,7 @@
         <BentoItem text="The First Chapter" link="/search?setCode=TFC" wallpaper={TFC} height={3} width={2} />
         <!-- BREAK -->
         <BentoItem text="Report Issues" link="/" height={1} width={4} />
-        <BentoItem text="" link="" wallpaper={discord} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: transparent !important;" external height={1} width={1}/>
+        <BentoItem text="" link="" wallpaper={discord} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: #424549 !important;" external height={1} width={1}/>
         <BentoItem text="" link="/" wallpaper={x} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: black !important;" external height={1} width={1} />
     </div>
 </div>
@@ -42,6 +42,7 @@
         width: 100%;
         min-height: calc(100vh - 160px);
         padding: 10px 20px;
+        background-color: #f3e7ff;
     }
 
     .hero {

@@ -46,7 +46,7 @@
         justify-content: space-between;
         align-items: flex-start;
         width: 100%;
-        background-color: #F7F7F8;
+        background-color: #e6d0fc;
         padding: 40px 40px;
     }
 
