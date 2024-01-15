@@ -1,4 +1,4 @@
-export enum CardSets {"P1", "TFC", "RFB"} 
+export enum CardSets {"P1", "TFC", "RFB", "ITI"} 
 
 export interface CardSet {
     id: number,
