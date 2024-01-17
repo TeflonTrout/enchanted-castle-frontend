@@ -89,23 +89,24 @@
             {/if}
         </div>
         <div class="mainContainer">
-            <div class="heading">
-                <div class="nameContainer"> 
-                    <h1>{cardData.name}</h1>
-                    <h3>{cardData.subname}</h3>
-                </div>
-                <div>
-                    <Button link={`../search?setCode=${cardData.set_code}`} text={setArray[cardData.set_id - 1]?.set_name}/>
-                </div>
-            </div>
-            <div class="bodyText">
-                {#if cardData.body_text?.length > 0}                    
-                    {#each cardData.body_text as text}
-                    <p>{parseBodyText(text)}</p>
-                    {/each}
-                {/if}
-            </div>
             <div class="cardInfo" >
+                <div class="heading">
+                    <div class="nameContainer"> 
+                        <h1>{cardData.name}</h1>
+                        <h3>{cardData.subname}</h3>
+                    </div>
+                    <div>
+                        <Button link={`../search?setCode=${cardData.set_code}`} text={setArray[cardData.set_id - 1]?.set_name}/>
+                    </div>
+                </div>
+                <span class="headingBreak"></span>
+                {#if cardData.body_text?.length > 0}                    
+                    <div class="bodyText">
+                        {#each cardData.body_text as text}
+                            <p>{parseBodyText(text)}</p>
+                        {/each}
+                    </div>
+                {/if}
                 <div class="heading">
                     <h4>Product Details</h4>
                 </div>
@@ -180,6 +181,7 @@
         .individualCard .cardImage img {
             display: flex;
             max-width: 300px;
+            background-color: #f3e7ff;
         }
     } 
 
@@ -190,8 +192,9 @@
             justify-content: space-evenly;
             align-items: flex-start;
             gap: 10px;
-            margin-top: 25px;
+            padding-top: 25px;
             padding: 50px;
+            background-color: #f3e7ff;
         }
 
         .cardImage {
@@ -199,6 +202,7 @@
             justify-self: center;
             align-self: flex-start;
             width: 30%;
+            background-color: #f3e7ff;
         }
 
         .cardImage img {
@@ -212,6 +216,7 @@
             align-items: flex-start;
             width: 100%;
             padding: 0px 25px;
+            background-color: #f3e7ff;
         }
 
         .mainContainer .heading {
@@ -251,14 +256,15 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: flex-start;
-            width: 75%;
+            width: 100%;
             border-radius: 10px;
             min-height: 350px;
             padding: 25px;
+            margin-top: 10px;
             gap: 20px;
             box-shadow: 1px 1px 10px 3px #E4E4E4;
             border: 1px solid #E4E4E4;
-            background: #FFF;
+            background-color: white;
         }
 
         .cardInfo a {
@@ -276,7 +282,7 @@
         .cardInfo .heading {
             width: 100%;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
             margin: 0;
         }
@@ -305,6 +311,13 @@
             width: 20%;
         }
 
+        .headingBreak {
+            display: block !important;
+            border: 1.5px solid #DEE2E6 !important;
+            width: 100% !important;
+            border-radius: 3px;
+        }
+
         .cardInfo span {
             display: block;
             border: 1px dotted #DEE2E6;
@@ -321,6 +334,7 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+            background-color: #f3e7ff;
         }
 
         .otherCards h1 {
