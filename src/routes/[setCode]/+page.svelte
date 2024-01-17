@@ -19,7 +19,7 @@
 
     onMount(async () => {
         try {
-            axios.get(`http://localhost:9090/cards/${data.setCode}?sort=${sortBy}`)
+            axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}?sort=${sortBy}`)
             .then(res => {
                 console.log(res)
                 setName = res.data.setData.name
@@ -38,7 +38,7 @@
     const updateSearch = async(e:Event) => {
         const target = e.target as HTMLSelectElement;
         cardArray = []
-        await axios.get(`http://localhost:9090/cards/${data.setCode}?sort=${target.value}`)
+        await axios.get(`https://enchanted-castle-server.onrender.com/cards/${data.setCode}?sort=${target.value}`)
         .then(res => {
                 cardArray = res.data.data
                 setData = null

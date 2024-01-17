@@ -48,7 +48,6 @@
     }
 
     .item {
-        background-color: #f5f5f5;
         border-radius: 0.5rem;
         transition: .2s ease-in-out;
         display: flex;
@@ -57,6 +56,7 @@
         cursor: pointer;
         text-align: center;
         position: relative;
+        border: 2px solid #dadada;
         background-color: #8EC5FC;
         background-image: linear-gradient(45deg, #8EC5FC 0%, #E0C3FC 100%);
     }  
