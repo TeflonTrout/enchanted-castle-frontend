@@ -1,11 +1,12 @@
 <script>
-  import LinkArrows from "../../icons/linkArrows.svelte";
-
+    import LinkArrows from "../../icons/linkArrows.svelte";
+    import EC from "../../images/EC_Logo_Transparent.png"
 </script>
+
 <div class="footer">
-    <div class="column">
-        <h1>Enhanted Castle</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat alias numquam soluta quaerat fugiat inventore impedit dolorem exercitationem, quibusdam optio!</p>
+    <div class="heading">
+        <a href="/"><img src={EC} alt="Enchanted Castle"></a>
+        <a href="/"><h1>Enhanted Castle</h1></a>
     </div>
     <div class="links">
         <div class="column">
@@ -14,7 +15,7 @@
                 <li><a href="/"><LinkArrows />Home</a></li>
                 <li><a href="/about"><LinkArrows />About</a></li>
                 <li><a href="/search"><LinkArrows />Search</a></li>
-                <li><a href="/"><LinkArrows />Sets</a></li>
+                <li><a href="/sets"><LinkArrows />Sets</a></li>
             </ul>
         </div>
         <div class="column">
@@ -28,9 +29,9 @@
         <div class="column">
             <h3>Socials</h3>
             <ul>
-                <li><LinkArrows />Discord</li>
-                <li><LinkArrows />Twitter</li>
-                <li><LinkArrows />LinkedIn</li>
+                <li><a href="/"><LinkArrows />Discord</a></li>
+                <li><a href="/"><LinkArrows />Twitter</a></li>
+                <li><a href="https://linkedin.com/in/jtkazousky" target="_blank" rel="noreferrer"><LinkArrows />LinkedIn</a></li>
             </ul>
         </div>
     </div>
@@ -41,13 +42,18 @@
 </div>
 
 <style>
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+    
     .footer {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         width: 100%;
         background-color: #e6d0fc;
-        padding: 40px 40px;
+        padding: 40px 20px;
     }
 
     .footer .column {
@@ -58,19 +64,33 @@
         width: 40%;
     }
 
-    .footer .links {
+    .footer .heading {
         display: flex;
         justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+        color: var(--ec-purple)
+    }
+
+    .footer .heading img {
+        width: 50px;
+        padding-bottom: 10px;
+    }
+
+    .footer .links {
+        display: flex;
+        justify-content: space-between;
         align-items: flex-start;
-        width: 60%;
+        width: 100%;
     }
     
     .footer .links .column {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: center;
-        width: 33%;
+        align-items: flex-start;
+        width: 30%;
     }
 
     .footer .links .column h3 {
@@ -80,7 +100,7 @@
     .footer ul {
         display: flex;
         flex-direction: column;
-        width: 60%;
+        width: 100%;
         gap: 5px;
         justify-content: flex-start;
         align-items: flex-start;
@@ -98,7 +118,7 @@
     }
     
     .footer li:hover a {
-        gap: 20px;
+        gap: 20px !important;
         transition: .1s ease-in-out;
     }
     

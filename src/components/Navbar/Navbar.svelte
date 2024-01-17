@@ -49,7 +49,7 @@
         align-items: center;
         color: var(--ec-black);
         background-color: #ffffff;
-        background-image: linear-gradient(0deg, #f3e7ff 0%, #E0C3FC 100%);
+        background-image: linear-gradient(0deg, #f3e7ff 0%, #d2a1ff 100%);
     }
 
     .navbar .imageContainer {

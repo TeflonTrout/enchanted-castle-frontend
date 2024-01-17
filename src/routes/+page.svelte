@@ -3,7 +3,6 @@
   import TFC from "../../src/images/TFC_Elsa.png"
   import RFB from "../../src/images/RFB_Pooh.jpg"
   import hero from "../../src/images/hero.jpg"
-  import cardBack from "../../src/images/cardBack.jpg"
   import discord from "../../src/images/discord.png"
   import x from "../../src/images/x.png"
 </script>
