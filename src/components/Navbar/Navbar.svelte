@@ -40,6 +40,28 @@
 </div>
 
 <style>
+    @media screen and (max-width: 768px) {
+        .navbar {
+            padding: 10px !important;
+        }
+
+        .navbar h1 {
+            display: none;
+            font-size: 1.75rem !important;
+        }
+
+        .navbar .searchBar {
+            width: 35% !important;
+        }
+
+        .navbar .linkContainer {
+            width: 45% !important;
+        }
+
+        .navbar .linkContainer a {
+            font-size: .75rem !important;
+        }
+    }
     .navbar {
         display: flex;
         flex-direction: row;
