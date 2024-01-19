@@ -27,8 +27,8 @@
         <BentoItem text="The First Chapter" link="/search?setCode=TFC" wallpaper={TFC} height={3} width={2} />
         <!-- BREAK -->
         <BentoItem text="Report Issues" link="/" height={1} width={4} />
-        <BentoItem text="" link="" wallpaper={discord} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: #424549 !important;" external height={1} width={1}/>
-        <BentoItem text="" link="/" wallpaper={x} wallpaperProps={"left: 0%; height: 80%;"} itemProps="background-image: none; background-color: black !important;" external height={1} width={1} />
+        <BentoItem text="" link="" wallpaper={discord} wallpaperProps={"left: 0%; height: auto; width: 70%;"} itemProps="background-image: none; background-color: #424549 !important;" external height={1} width={1}/>
+        <BentoItem text="" link="/" wallpaper={x} wallpaperProps={"left: 0%; height: auto; width: 70%;"} itemProps="background-image: none; background-color: black !important;" external height={1} width={1} />
     </div>
 </div>
 
@@ -36,7 +36,7 @@
     .home {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         width: 100%;
         min-height: calc(100vh - 160px);
@@ -74,11 +74,30 @@
         grid-template-rows: repeat(2, 100px);
     }
 
-    /* Responsive adjustments for larger screens */
+    /* MOBILE */
     @media (max-width: 768px) {
+        .home {
+            padding: 0px 10px !important;
+        }
+
+        .hero {
+            width: 100% !important;
+            gap: 10px !important;
+        }
+
+        .hero h1{
+            width: 100% !important;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .hero h4 {
+            font-size: 1rem;
+        }
+
         .bentoBox {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            grid-template-rows: repeat(8, 75px);
+            grid-template-columns: repeat(6, 1fr) !important;
+            grid-template-rows: repeat(8, 100px) !important;
         }
     }
 </style>
