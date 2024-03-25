@@ -78,7 +78,7 @@
     const updateSearchPage = async(newPage:number, newLimit:number) => {
         const newQueryString = getAllSearchParams()
         cardArray = []
-        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${newQueryString}`)
+        await axios.get(`https://enchanted-castle-api.onrender.com/search?sort=${sortBy}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
             cardArray = res.data.data
             totalPages = numberToArray(res.data.totalPages)
@@ -94,7 +94,7 @@
         const newQueryString = getAllSearchParams()
         const target = e.target as HTMLSelectElement;
         cardArray = []
-        await axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
+        await axios.get(`https://enchanted-castle-api.onrender.com/search?sort=${target.value}&page=${newPage}&limit=${newLimit}${newQueryString}`)
         .then(res => {
                 cardArray = res.data.data
                 totalPages = numberToArray(res.data.totalPages)
@@ -104,7 +104,7 @@
     const updateSearchQuery = () => {
         if(userQuery == "") { 
             goto(`/search`);
-            axios.get(`https://enchanted-castle-server.onrender.com/search?sort=${sortBy}&${queryString}`)
+            axios.get(`https://enchanted-castle-api.onrender.com/search?sort=${sortBy}&${queryString}`)
             .then(res => {
                 cardArray = res.data.data
                 totalPages = numberToArray(res.data.totalPages)
@@ -112,7 +112,7 @@
         } else {
             $page.url.searchParams.set('name', userQuery); 
             goto(`?${$page.url.searchParams.toString()}`);
-            axios.get(`https://enchanted-castle-server.onrender.com/search?${$page.url.searchParams.toString()}`)
+            axios.get(`https://enchanted-castle-api.onrender.com/search?${$page.url.searchParams.toString()}`)
             .then(res => {
                 cardArray = res.data.data
                 totalPages = numberToArray(res.data.totalPages)
